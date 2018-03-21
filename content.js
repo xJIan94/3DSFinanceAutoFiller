@@ -23,8 +23,33 @@ function insertCase(keyNumber,type) {
 }
 
 
-// Need to add a loop to flash all the data
+function injectInlineScript(injectedCode){
 
+  var injectedCode = '(' + injectedCode + ')();';
+
+  var script = document.createElement('script');
+  script.textContent = injectedCode;
+  (document.body || document.head || document.documentElement).appendChild(script);
+  console.log(script);
+  script.parentNode.removeChild(script);
+  //$('#ptifrmtgtframe').contents().append(script);
+  //$('#ptifrmtgtframe').contents().javascript:pAction_win0(document.win0,'ACTIVITY_CODE$prompt$0')
+  //$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(document.win0,'ACTIVITY_CODE$prompt$0')
+  //
+
+  
+
+  /*
+  $('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(,'ACTIVITY_CODE$prompt$0')
+  //$('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY')[0].outerHTML
+  $('#ptifrmtgtframe').get(0).contentWindow.('#TE_TIME_ENTRY').parent().html()
+  $('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY').clone()
+  $('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY')[0].outerHTML
+
+  $("#el")[0].outerHTML
+// Need to add a loop to flash all the data
+  */
+}
 
 
 if (typeof jQuery !== 'undefined') {  
@@ -44,7 +69,7 @@ if (typeof jQuery !== 'undefined') {
            
       //    }
       // });
-       chrome.storage.local.get('timesheetData', function (result) {
+      chrome.storage.local.get('timesheetData', function (result) {
             timesheetData = result.timesheetData;
             keys = Object.keys(timesheetData);
             console.log(timesheetData);
@@ -93,14 +118,19 @@ if (typeof jQuery !== 'undefined') {
                         rowNum = rowNum +1 ;
                       }
                         //done injecting
-                      /*
+                      
                       //check wrong project code
+                      var code = "function(){"+
+                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
+                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$0');}";
+                      injectInlineScript(code);
+            
                       //$('#ptifrmtgtframe').contents().find(".PSERROR").val()
                         
                     //click the button "EX_ICLIENT_WRK_PB_UPDATE" check for any invalid data
 
                     
-                    */ 
+                    
             }
             
         });
