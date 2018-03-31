@@ -16,11 +16,6 @@
     "tabs"
   ],
   
-  // "background": {
-  //   "scripts": ["jquery.min.js", "content.js"],
-  //   "persistent": false
-  // }
-
   "content_scripts": [ {
     "js": [ "jquery.min.js", "content.js"],
     "matches": [ "https://dsxfinance.dsone.3ds.com/"],

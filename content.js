@@ -32,23 +32,7 @@ function injectInlineScript(injectedCode){
   (document.body || document.head || document.documentElement).appendChild(script);
   console.log(script);
   script.parentNode.removeChild(script);
-  //$('#ptifrmtgtframe').contents().append(script);
-  //$('#ptifrmtgtframe').contents().javascript:pAction_win0(document.win0,'ACTIVITY_CODE$prompt$0')
-  //$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(document.win0,'ACTIVITY_CODE$prompt$0')
-  //
 
-  
-
-  /*
-  $('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(,'ACTIVITY_CODE$prompt$0')
-  //$('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY')[0].outerHTML
-  $('#ptifrmtgtframe').get(0).contentWindow.('#TE_TIME_ENTRY').parent().html()
-  $('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY').clone()
-  $('#ptifrmtgtframe').contents().find('#TE_TIME_ENTRY')[0].outerHTML
-
-  $("#el")[0].outerHTML
-// Need to add a loop to flash all the data
-  */
 }
 
 

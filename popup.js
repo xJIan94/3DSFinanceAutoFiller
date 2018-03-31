@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
               chrome.tabs.executeScript(null, { file: "content.js" });
           });
           // alert("scirpt js done");
-          window.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
+          //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
           console.log("execute background.js");
 
         }
