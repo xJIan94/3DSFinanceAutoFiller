@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
           
           chrome.tabs.executeScript(null, { file: "jquery.min.js" }, function() {
+              chrome.tabs.executeScript(null, { file: "model.js" });
               chrome.tabs.executeScript(null, { file: "content.js" });
           });
           // alert("scirpt js done");
