@@ -29,30 +29,43 @@ function injectInlineScript(injectedCode){
 
   var script = document.createElement('script');
   script.textContent = injectedCode;
-  (document.body || document.head || document.documentElement).appendChild(script);
+  //(document.body || document.head || document.documentElement).appendChild(script);
+  document.getElementsByTagName('head')[0].appendChild(script);
   console.log(script);
   script.parentNode.removeChild(script);
 
 }
 
+function injectJQueryScript(){
+
+  
+  var jq = document.createElement('script');
+  jq.src = "//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js";
+  document.getElementsByTagName('head')[0].appendChild(jq);
+  console.log(jq);
+
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function openActivityMenu(){
+
+        var code = "function(){"+
+                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
+                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$0');}";
+
+
+        await sleep(3000);
+        injectInlineScript(code);
+}
 
 if (typeof jQuery !== 'undefined') {  
       console.log("background js running");
       var timesheetData = "";
-
-      // chrome.storage.onChanged.addListener(function(changes, namespace) {
-      //    for (key in changes) {
-      //      var storageChange = changes['timesheetData'];
-      //      console.log('Storage key "%s" in namespace "%s" changed. ' +
-      //                  'Old value was "%s", new value is "%s".',
-      //                  key,
-      //                  namespace,
-      //                  storageChange.oldValue,
-      //                  storageChange.newValue);
-      //      var timesheetData = storageChange.newValue;
-           
-      //    }
-      // });
+      injectJQueryScript();
+     
       chrome.storage.local.get('timesheetData', function (result) {
             timesheetData = result.timesheetData;
             keys = Object.keys(timesheetData);
@@ -104,11 +117,8 @@ if (typeof jQuery !== 'undefined') {
                         //done injecting
                       
                       //check wrong project code
-                      var code = "function(){"+
-                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
-                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$0');}";
-                      injectInlineScript(code);
-            
+                      
+                      openActivityMenu();
                       //$('#ptifrmtgtframe').contents().find(".PSERROR").val()
                         
                     //click the button "EX_ICLIENT_WRK_PB_UPDATE" check for any invalid data
