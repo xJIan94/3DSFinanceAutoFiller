@@ -13,13 +13,27 @@ function insertSpecialCase(keyNumber) {
 
 function insertCase(keyNumber,type) {
       //POL_TIME(day)$1
-      if(typeof timesheetData[keyNumber].Mon !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME1\\$'+type).val(timesheetData[keyNumber].Mon); }
+      var day = { "Mon":'1', "Tue":'2' , "Wed":'3', "Thu":'4', "Fri":'5', "Sat":'6', "Sun":'7' };
+
+      var rowdata = timesheetData[keyNumber];
+      console.log(rowdata);
+      for (var key in rowdata){
+        if(rowdata.hasOwnProperty(key)){// check if the key exist
+            //console.log(key, rowdata[key]);
+            if(day.hasOwnProperty(key)){
+                $('#ptifrmtgtframe').contents().find('#POL_TIME'+day[key]+'\\$'+type).val(rowdata[key]);
+            }
+            
+        }
+      }
+
+     /* if(typeof timesheetData[keyNumber].Mon !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME1\\$'+type).val(timesheetData[keyNumber].Mon); }
       if(typeof timesheetData[keyNumber].Tue !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME2\\$'+type).val(timesheetData[keyNumber].Tue); }
       if(typeof timesheetData[keyNumber].Wed !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME3\\$'+type).val(timesheetData[keyNumber].Wed); }
       if(typeof timesheetData[keyNumber].Thu !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME4\\$'+type).val(timesheetData[keyNumber].Thu); }
       if(typeof timesheetData[keyNumber].Fri !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME5\\$'+type).val(timesheetData[keyNumber].Fri); }
       if(typeof timesheetData[keyNumber].Sat !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME6\\$'+type).val(timesheetData[keyNumber].Sat); }
-      if(typeof timesheetData[keyNumber].Sun !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME7\\$'+type).val(timesheetData[keyNumber].Sun); }
+      if(typeof timesheetData[keyNumber].Sun !== 'undefined') { $('#ptifrmtgtframe').contents().find('#POL_TIME7\\$'+type).val(timesheetData[keyNumber].Sun); }*/
 }
 
 
@@ -50,13 +64,36 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function openActivityMenu(){
+async function openActivityMenu(rowNum){
 
         var code = "function(){"+
                               "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
-                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$0');}";
+                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$"+rowNum+"');}";
 
 
-        await sleep(3000);
+        await sleep(2500);
         injectInlineScript(code);
 }
+
+async function addNewRow(rowNum){
+
+        var code = "function(){"+
+                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
+                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$new$"+rowNum+"$$0');}";
+
+
+        await sleep(1000);
+        injectInlineScript(code);
+}
+
+async function deleteRow(rowNum){
+
+        var code = "function(){"+
+                   "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
+                   "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$delete$"+rowNum+"$$0');}";
+
+
+        await sleep(1000);
+        injectInlineScript(code);
+}
+// oParentWin.aAction_win0(oParentWin.document.win0,"EX_TIME_DTL$delete$6$$0");closeMsg(this);

@@ -55,7 +55,9 @@ if (typeof jQuery !== 'undefined') {
                       
                       //check wrong project code
                       
-                      openActivityMenu();
+                      //openActivityMenu(6);
+                      //addNewRow(1);
+                      //deleteRow(0);
                       //$('#ptifrmtgtframe').contents().find(".PSERROR").val()
                         
                     //click the button "EX_ICLIENT_WRK_PB_UPDATE" check for any invalid data
