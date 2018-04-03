@@ -44,8 +44,24 @@ function insertProjectHour(rowdata,rowNum){
 }
 
 function insertProjectBU(rowdata,rowNum){
-    
 
+      console.log(rowdata);
+      rowdata["BU"].replace(' ',''); // replace the space inside the BU code
+      $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val(rowdata["BU"]);
+}
+
+function insertProjectCode(rowdata,rowNum){
+
+  if(rowdata.hasOwnProperty("PJ")){// check if the Project Code exist
+            
+      console.log(rowdata);
+      rowdata["PJ"].replace(' ',''); // replace the space inside the BU code
+      $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]);
+            
+  }else{
+      console.log("Project Code Didn't EXIST!!!")
+  }
+      
 }
 
 function injectInlineScript(injectedCode){
