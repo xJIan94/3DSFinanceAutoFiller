@@ -93,42 +93,75 @@ async function injectJQueryScript(){
 
 }
 
+async function waitUntilActionCompleted(){
+  await sleep(1500);
+  var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
+  console.log(loading);
+  if (loading == 'none'){
+    return true;
+    console.log("action done")
+
+  }else if(loading == 'block'){
+    console.log("action not done")
+    await sleep(500);
+    return waitUntilActionCompleted();
+    
+  }else{
+    console.log("ERROR! system unable to check is the page done loading!");
+    return false;
+  } 
+}
+
+
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function openActivityMenu(rowNum){
+ function openActivityMenu(rowNum){
 
         var code = "function(){"+
                               "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
                               "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$"+rowNum+"');}";
 
 
-        await sleep(1000);
+        // await sleep(100);
         injectInlineScript(code);
         console.log("Open Activity Menu for Row "+rowNum);
 }
 
-async function addNewRow(rowNum){
+ function closeActivityMenu(){
+        var code = "function(){"+
+                              "var tempvalue = $('iFrame').get(0).contentWindow.document.win0;"+
+                              "$('iFrame').get(0).contentWindow.doUpdateParent(tempvalue,'\\#ICCancel');}";
+
+
+        // await sleep(100);
+        injectInlineScript(code);
+        console.log("Closed Activity Menu");
+
+}
+
+
+ function addNewRow(rowNum){
 
         var code = "function(){"+
                               "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
                               "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$new$"+rowNum+"$$0');}";
 
 
-        await sleep(1000);
         injectInlineScript(code);
         console.log("Add New Row for Row "+rowNum);
 }
 
-async function deleteRow(rowNum){
+ function deleteRow(rowNum){
 
         var code = "function(){"+
                    "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
                    "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$delete$"+rowNum+"$$0');}";
 
 
-        await sleep(1000);
+ 
         injectInlineScript(code);
         console.log("Deleted Row "+rowNum);
 }
