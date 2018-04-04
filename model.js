@@ -43,7 +43,7 @@ function insertProjectHour(rowdata,rowNum){
       }
 }
 
-function insertProjectBU(rowdata,rowNum){
+async function insertProjectBU(rowdata,rowNum){
 
       console.log(rowdata);
       rowdata["BU"].replace(/ /g,''); // replace the space inside the BU code
@@ -143,8 +143,9 @@ async function selectActivity(rowdata,rowNum){
       openActivityMenu(rowNum);
       await waitUntilActionCompleted();
       var noOfActivity = 1;
+      var temp = $('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
 
-      if ([Number]$('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text() > noOfActivity){
+      if ( Number(temp) > noOfActivity){
           noOfActivity = [Number]$('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
       }
       var task = rowdata["TASK"];
