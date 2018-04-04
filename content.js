@@ -1,7 +1,10 @@
+async function main(){
+
+
 if (typeof jQuery !== 'undefined') {  
 		console.log("background js running");
 		var timesheetData = "";
-		injectJQueryScript();
+		await injectJQueryScript();
 
 		chrome.storage.local.get('timesheetData',async function (result) {
 			timesheetData = result.timesheetData;
@@ -13,7 +16,7 @@ if (typeof jQuery !== 'undefined') {
 							console.log("start injecting");
 							var rowNum =0;
 
-							/*for (var key in timesheetData){
+							for (var key in timesheetData){
 
 									rowdata = timesheetData[key];
 
@@ -28,15 +31,14 @@ if (typeof jQuery !== 'undefined') {
 											}else{
 													insertProjectBU(rowdata,rowNum);
 													insertProjectCode(rowdata,rowNum);
+													await selectActivity(rowdata,rowNum);
 													insertProjectHour(rowdata,rowNum);
 													rowNum = rowNum +1 ;
 
 														}
 										}                        
-								}//done injecting*/
-							openActivityMenu(1);
-							await waitUntilActionCompleted();
-							closeActivityMenu()
+								}//done injecting
+		
 						}
 
 		});
@@ -44,3 +46,6 @@ if (typeof jQuery !== 'undefined') {
 		console.log("jQuery not loaded");
 			// jQuery not loaded
 }
+}
+
+main();

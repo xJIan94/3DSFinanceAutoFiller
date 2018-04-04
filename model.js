@@ -46,8 +46,19 @@ function insertProjectHour(rowdata,rowNum){
 function insertProjectBU(rowdata,rowNum){
 
       console.log(rowdata);
-      rowdata["BU"].replace(' ',''); // replace the space inside the BU code
+      rowdata["BU"].replace(/ /g,''); // replace the space inside the BU code
+      await checkIfNextRowExist(rowNum);
       $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val(rowdata["BU"]);
+
+}
+
+async function checkIfNextRowExist(rowNum){
+      if( typeof $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val() == 'undefined' ){
+        addNewRow(rowNum);
+        await waitUntilActionCompleted();
+        
+      }
+
 }
 
 function insertProjectCode(rowdata,rowNum){
@@ -55,7 +66,7 @@ function insertProjectCode(rowdata,rowNum){
   if(rowdata.hasOwnProperty("PJ")){// check if the Project Code exist
             
       console.log(rowdata);
-      rowdata["PJ"].replace(' ',''); // replace the space inside the BU code
+      rowdata["PJ"].replace(/ /g,''); // replace the space inside the BU code
       $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]);
             
   }else{
@@ -82,19 +93,18 @@ async function checkIfJqueryExist(){
 }
 
 async function injectJQueryScript(){
-
   
   var jq = document.createElement('script');
   // jq.src = "jquery.min.js";
   jq.src = "//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js";
   document.getElementsByTagName('head')[0].appendChild(jq);
   console.log(jq);
-  await sleep(2500);
+  await sleep(3500);
 
 }
 
 async function waitUntilActionCompleted(){
-  await sleep(1500);
+  await sleep(2000);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
   console.log(loading);
   if (loading == 'none'){
@@ -103,7 +113,7 @@ async function waitUntilActionCompleted(){
 
   }else if(loading == 'block'){
     console.log("action not done")
-    await sleep(500);
+    await sleep(350);
     return waitUntilActionCompleted();
     
   }else{
@@ -111,8 +121,6 @@ async function waitUntilActionCompleted(){
     return false;
   } 
 }
-
-
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -128,6 +136,36 @@ function sleep(ms) {
         // await sleep(100);
         injectInlineScript(code);
         console.log("Open Activity Menu for Row "+rowNum);
+}
+
+async function selectActivity(rowdata,rowNum){
+
+      openActivityMenu(rowNum);
+      await waitUntilActionCompleted();
+      var noOfActivity = 1;
+
+      if ([Number]$('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text() > noOfActivity){
+          noOfActivity = [Number]$('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
+      }
+      var task = rowdata["TASK"];
+      // var task = rowdata["TASK"].toLowerCase();
+      var taskId = '';
+
+      console.log(noOfActivity,task);
+      for (var i = 0; i < noOfActivity; i++) {
+        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text();
+        console.log(activityMenuText);
+        if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
+            taskId = $('iFrame').contents().find('#PTSRCHRESULTS0 a[name=RESULT0\\$'+i+']').text();
+            console.log(taskId);
+            closeActivityMenu;
+            await waitUntilActionCompleted();
+            $('#ptifrmtgtframe').contents().find('#ACTIVITY_CODE\\$'+rowNum).val(taskId);
+            return true;
+        }
+      }
+      console.log("ERROR!!! Activity '"+task+"' for row "+rowNum+" could not be found!!!");
+      return false;
 }
 
  function closeActivityMenu(){
