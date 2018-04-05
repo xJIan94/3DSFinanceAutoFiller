@@ -31,8 +31,13 @@ if (typeof jQuery !== 'undefined') {
 											}else{
 													insertProjectBU(rowdata,rowNum);
 													insertProjectCode(rowdata,rowNum);
-													await selectActivity(rowdata,rowNum);
+													// console.log("before Select Activity ",new Date().toLocaleTimeString());
+													// await selectActivity(rowdata,rowNum);
+													// await sleep(2000);
+													// console.log("after selectActivity", new Date().toLocaleTimeString());
 													insertProjectHour(rowdata,rowNum);
+													// await sleep(2000);
+													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
 													rowNum = rowNum +1 ;
 
 														}

@@ -1,14 +1,15 @@
 function insertPersonalHour(rowdata) {
     var type = {"Admin":'1',"Training":'5',"Sick":'11',"Leave":'9'};
     // var rowdata = timesheetData[keyNumber];
+    tempBU = rowdata["BU"].toLowerCase();
     console.log(rowdata);
-    if(rowdata["BU"].toLowerCase().search('adminstration') > 0){
+    if(tempBU.search('adminstration') > 0){
         insertPersonalHourRow(rowdata,type["Admin"]);
-    }else if (rowdata["BU"].toLowerCase().search('training received') > 0) {
+    }else if (tempBU.search('training received') > 0) {
         insertPersonalHourRow(rowdata,type["Training"]);
-    }else if (rowdata["BU"].toLowerCase().search('paid vacation') > 0) {
+    }else if (tempBU.search('paid vacation') > 0) {
         insertPersonalHourRow(rowdata,type["Leave"]);
-    }else if (rowdata["BU"].BU.toLowerCase().search('sick leave') > 0) {
+    }else if (tempBU.search('sick leave') > 0) {
         insertPersonalHourRow(rowdata,type["Sick"]);
     }
 }
@@ -28,7 +29,8 @@ function insertPersonalHourRow(rowdata,type) {
       }
 }
 
-function insertProjectHour(rowdata,rowNum){
+async function insertProjectHour(rowdata,rowNum){
+      await sleep(1500);
       var day = { "Mon":'1', "Tue":'2' , "Wed":'3', "Thu":'4', "Fri":'5', "Sat":'6', "Sun":'7' };
       
       for (var key in rowdata){
@@ -46,7 +48,7 @@ function insertProjectHour(rowdata,rowNum){
 async function insertProjectBU(rowdata,rowNum){
 
       console.log(rowdata);
-      rowdata["BU"].replace(/ /g,''); // replace the space inside the BU code
+      rowdata["BU"] = rowdata["BU"].replace(/ /g,''); // replace the space inside the BU code
       await checkIfNextRowExist(rowNum);
       $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val(rowdata["BU"]);
 
@@ -66,7 +68,8 @@ function insertProjectCode(rowdata,rowNum){
   if(rowdata.hasOwnProperty("PJ")){// check if the Project Code exist
             
       console.log(rowdata);
-      rowdata["PJ"].replace(/ /g,''); // replace the space inside the BU code
+      rowdata["PJ"] = rowdata["PJ"].replace(/ /g,''); // replace the space inside the BU code
+      console.log(rowdata);
       $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]);
             
   }else{
@@ -99,12 +102,12 @@ async function injectJQueryScript(){
   jq.src = "//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js";
   document.getElementsByTagName('head')[0].appendChild(jq);
   console.log(jq);
-  await sleep(3500);
+  await sleep(4500);
 
 }
 
 async function waitUntilActionCompleted(){
-  await sleep(2000);
+  await sleep(2500);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
   console.log(loading);
   if (loading == 'none'){
@@ -113,7 +116,7 @@ async function waitUntilActionCompleted(){
 
   }else if(loading == 'block'){
     console.log("action not done")
-    await sleep(350);
+    await sleep(300);
     return waitUntilActionCompleted();
     
   }else{
@@ -125,6 +128,8 @@ async function waitUntilActionCompleted(){
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// ------------------------------------------Activity-----------------------------------
 
  function openActivityMenu(rowNum){
 
@@ -138,44 +143,81 @@ function sleep(ms) {
         console.log("Open Activity Menu for Row "+rowNum);
 }
 
+
+
+
+function searchForTaskID(noOfActivity,task){
+
+      var taskId = '';
+
+      console.log(noOfActivity,task);
+      for (let i = 0; i < noOfActivity; i++) {
+        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text();
+        console.log(activityMenuText);
+        if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
+            taskId = $('iFrame').contents().find('#PTSRCHRESULTS0  #RESULT6\\$'+i).parent().prev().prev().prev().text();
+            return taskId;
+        }
+      }
+      return '';
+}
+
+function getActivityAmount(){
+
+      var temp = $('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
+      if ( Number(temp) > 1){
+          return Number(temp);
+      }else{
+          return 1;
+      }
+}
+
+async function tryToInputTask(task,taskId,rowNum){
+      if (taskId == ''){
+
+          console.log("ERROR!!! Activity '"+task+"' for row "+rowNum+" could not be found!!!");
+          window.exit();
+      }else{
+          console.log("Before insertActivity",new Date().toLocaleTimeString());
+          // insertActivity(taskId,rowNum);
+          closeActivityMenu();
+          await waitUntilActionCompleted();
+          $('#ptifrmtgtframe').contents().find('#ACTIVITY_CODE\\$'+rowNum).val(taskId);
+      }
+}
+
 async function selectActivity(rowdata,rowNum){
 
       openActivityMenu(rowNum);
       await waitUntilActionCompleted();
-      var noOfActivity = 1;
-      var temp = $('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
-
-      if ( Number(temp) > noOfActivity){
-          noOfActivity = [Number]$('iFrame').contents().find('#PTSRCHRESULTS0 #SEARCH_RESULTLAST').parent().next().text();
-      }
+      var noOfActivity = getActivityAmount();
       var task = rowdata["TASK"];
-      // var task = rowdata["TASK"].toLowerCase();
-      var taskId = '';
+      taskId = searchForTaskID(noOfActivity,task);
+      
+      tryToInputTask(task,taskId,rowNum);
 
-      console.log(noOfActivity,task);
-      for (var i = 0; i < noOfActivity; i++) {
-        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text();
-        console.log(activityMenuText);
-        if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
-            taskId = $('iFrame').contents().find('#PTSRCHRESULTS0 a[name=RESULT0\\$'+i+']').text();
-            console.log(taskId);
-            closeActivityMenu;
-            await waitUntilActionCompleted();
-            $('#ptifrmtgtframe').contents().find('#ACTIVITY_CODE\\$'+rowNum).val(taskId);
-            return true;
-        }
-      }
-      console.log("ERROR!!! Activity '"+task+"' for row "+rowNum+" could not be found!!!");
       return false;
 }
 
- function closeActivityMenu(){
+
+
+/*function insertActivity(taskId,rowNum){
+    
+    console.log(taskId);
+    
+    
+    
+    await sleep(5000);
+}
+*/
+
+function closeActivityMenu(){
         var code = "function(){"+
                               "var tempvalue = $('iFrame').get(0).contentWindow.document.win0;"+
                               "$('iFrame').get(0).contentWindow.doUpdateParent(tempvalue,'\\#ICCancel');}";
 
 
-        // await sleep(100);
+        
         injectInlineScript(code);
         console.log("Closed Activity Menu");
 
@@ -204,4 +246,3 @@ async function selectActivity(rowdata,rowNum){
         injectInlineScript(code);
         console.log("Deleted Row "+rowNum);
 }
-// oParentWin.aAction_win0(oParentWin.document.win0,"EX_TIME_DTL$delete$6$$0");closeMsg(this);
