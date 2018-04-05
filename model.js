@@ -131,7 +131,7 @@ function sleep(ms) {
 
 // ------------------------------------------Activity-----------------------------------
 
- function openActivityMenu(rowNum){
+/* function openActivityMenu(rowNum){
 
         var code = "function(){"+
                               "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
@@ -141,9 +141,14 @@ function sleep(ms) {
         // await sleep(100);
         injectInlineScript(code);
         console.log("Open Activity Menu for Row "+rowNum);
+}*/
+
+
+ function openActivityMenu(rowNum){
+
+        $('#ptifrmtgtframe').contents().find('#win0divACTIVITY_CODE\\$'+rowNum+' a')[0].click();
+        console.log("Open Activity Menu for Row "+rowNum);
 }
-
-
 
 
 function searchForTaskID(noOfActivity,task){
@@ -212,13 +217,8 @@ async function selectActivity(rowdata,rowNum){
 */
 
 function closeActivityMenu(){
-        var code = "function(){"+
-                              "var tempvalue = $('iFrame').get(0).contentWindow.document.win0;"+
-                              "$('iFrame').get(0).contentWindow.doUpdateParent(tempvalue,'\\#ICCancel');}";
-
-
-        
-        injectInlineScript(code);
+  
+       $('iFrame').contents().find('#win0divSEARCHBELOW input.PSPUSHBUTTONTBCANCEL')[0].click();
         console.log("Closed Activity Menu");
 
 }
