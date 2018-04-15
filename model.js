@@ -30,7 +30,7 @@ function insertPersonalHourRow(rowdata,type) {
 }
 
 async function insertProjectHour(rowdata,rowNum){
-      await sleep(1500);
+      // await sleep(500);
       var day = { "Mon":'1', "Tue":'2' , "Wed":'3', "Thu":'4', "Fri":'5', "Sat":'6', "Sun":'7' };
       
       for (var key in rowdata){
@@ -47,7 +47,7 @@ async function insertProjectHour(rowdata,rowNum){
 
 async function insertProjectBU(rowdata,rowNum){
 
-      console.log(rowdata);
+      console.log("inserting BU -->"+ rowdata['BU'] );
       rowdata["BU"] = rowdata["BU"].replace(/ /g,''); // replace the space inside the BU code
       await checkIfNextRowExist(rowNum);
       $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val(rowdata["BU"]);
@@ -56,8 +56,9 @@ async function insertProjectBU(rowdata,rowNum){
 
 async function checkIfNextRowExist(rowNum){
       if( typeof $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val() == 'undefined' ){
-        addNewRow(rowNum);
+        addNewRow(rowNum-1);
         await waitUntilActionCompleted();
+        await sleep(1000);
         
       }
 
@@ -67,10 +68,10 @@ function insertProjectCode(rowdata,rowNum){
 
   if(rowdata.hasOwnProperty("PJ")){// check if the Project Code exist
             
-      console.log(rowdata);
+      // console.log(rowdata);
       rowdata["PJ"] = rowdata["PJ"].replace(/ /g,''); // replace the space inside the BU code
       console.log(rowdata);
-      $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]);
+      $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]).trigger("change");
             
   }else{
       console.log("Project Code Didn't EXIST!!!")
@@ -131,24 +132,13 @@ function sleep(ms) {
 
 // ------------------------------------------Activity-----------------------------------
 
-/* function openActivityMenu(rowNum){
-
-        var code = "function(){"+
-                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
-                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'ACTIVITY_CODE$prompt$"+rowNum+"');}";
-
-
-        // await sleep(100);
-        injectInlineScript(code);
-        console.log("Open Activity Menu for Row "+rowNum);
-}*/
-
 
  function openActivityMenu(rowNum){
 
         $('#ptifrmtgtframe').contents().find('#win0divACTIVITY_CODE\\$'+rowNum+' a')[0].click();
         console.log("Open Activity Menu for Row "+rowNum);
 }
+
 
 
 function searchForTaskID(noOfActivity,task){
@@ -161,6 +151,9 @@ function searchForTaskID(noOfActivity,task){
         console.log(activityMenuText);
         if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
             taskId = $('iFrame').contents().find('#PTSRCHRESULTS0  #RESULT6\\$'+i).parent().prev().prev().prev().text();
+            console.log(taskId)
+            taskId = taskId.replace(/\n/g,'');
+            console.log(taskId)
             return taskId;
         }
       }
@@ -181,43 +174,93 @@ async function tryToInputTask(task,taskId,rowNum){
       if (taskId == ''){
 
           console.log("ERROR!!! Activity '"+task+"' for row "+rowNum+" could not be found!!!");
-          window.exit();
+          // await sleep(300000);
+          // window.exit();
       }else{
           console.log("Before insertActivity",new Date().toLocaleTimeString());
           // insertActivity(taskId,rowNum);
-          closeActivityMenu();
-          await waitUntilActionCompleted();
+          
           $('#ptifrmtgtframe').contents().find('#ACTIVITY_CODE\\$'+rowNum).val(taskId);
       }
 }
 
-async function selectActivity(rowdata,rowNum){
-
+async function selectActivity(rowdata,rowNum,numOfTryAllowed){ 
       openActivityMenu(rowNum);
       await waitUntilActionCompleted();
-      var noOfActivity = getActivityAmount();
-      var task = rowdata["TASK"];
-      taskId = searchForTaskID(noOfActivity,task);
-      
-      tryToInputTask(task,taskId,rowNum);
+      if(numOfTryAllowed >0){
+          if( checkIfActivityMenuGetOpen() ){
+              var noOfActivity = getActivityAmount();
+              var task = rowdata["TASK"];
+              taskId = searchForTaskID(noOfActivity,task);
+              closeActivityMenu();
+              await waitUntilActionCompleted();
+              tryToInputTask(task,taskId,rowNum);
 
+              return true;
+          }else if(checkIfErrorMenuOpen()){
+              closeErrorMenu();
+              await selectActivity(rowdata,rowNum,numOfTryAllowed-1);
+          }
+      }
       return false;
+     
+}
+
+function returnValueIfCommentExist(rowdata){
+    if(rowdata.hasOwnProperty('SCP')){ 
+        return rowdata['SCP'];
+    }else{
+      return "";
+    }
+}
+
+async function insertComment(rowdata,rowNum){
+    openCommentPage(rowNum);
+    await waitUntilActionCompleted();
+    comment = returnValueIfCommentExist(rowdata)
+    await sleep(700);
+    addComment(comment,rowNum);
+    await sleep(1000);
+    submitComment(rowNum);
+    await waitUntilActionCompleted();
+    await sleep(750);
+}
+
+function returnMenuTitle(){
+    var queryResult = '';
+    queryResult = $('.PSMODALHEADER span').text();
+    return queryResult;
+
+}
+
+function checkIfActivityMenuGetOpen(){
+    var queryResult = returnMenuTitle();
+    if ( queryResult == 'Look Up Activity'){
+      return true;
+    }else{
+      return false;
+    }
+
 }
 
 
 
-/*function insertActivity(taskId,rowNum){
-    
-    console.log(taskId);
-    
-    
-    
-    await sleep(5000);
+function checkIfErrorMenuOpen(){
+    var queryResult = returnMenuTitle();
+    if ( queryResult == ' Message '){
+      return true;
+    }else{
+      return false;
+    }
+} 
+
+function closeErrorMenu(){
+    $('#okbutton input').trigger('click');
+    console.log("Closed Error Menu");
 }
-*/
 
 function closeActivityMenu(){
-  
+
        $('iFrame').contents().find('#win0divSEARCHBELOW input.PSPUSHBUTTONTBCANCEL')[0].click();
         console.log("Closed Activity Menu");
 
@@ -226,12 +269,7 @@ function closeActivityMenu(){
 
  function addNewRow(rowNum){
 
-        var code = "function(){"+
-                              "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
-                              "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$new$"+rowNum+"$$0');}";
-
-
-        injectInlineScript(code);
+        $('#ptifrmtgtframe').contents().find('a#EX_TIME_DTL\\$new\\$'+rowNum +'\\$\\$0')[0].click();
         console.log("Add New Row for Row "+rowNum);
 }
 
@@ -239,10 +277,44 @@ function closeActivityMenu(){
 
         var code = "function(){"+
                    "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
-                   "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$delete$"+rowNum+"$$0');}";
+                   "$('#ptifrmtgtframe').get(0).contentWindow.pAction_win0(tempvalue,'EX_TIME_DTL$delete$"+ rowNum +"$$0');}";
 
-
- 
         injectInlineScript(code);
         console.log("Deleted Row "+rowNum);
 }
+
+
+function openCommentPage(rowNum){
+      $('#ptifrmtgtframe').contents().find('#win0divDSX_TM_COMM_WK_DSX_COMMENT_IMG\\$'+rowNum+' a')[0].click();
+      console.log("Click Comment for row "+rowNum);
+}
+
+function submitComment(){
+      $('#ptifrmtgtframe').contents().find('#win0divPSTOOLBAR input.PSPUSHBUTTONTBOK')[0].click();
+      console.log("Submit Comment");
+}
+
+/*function submitComment(){
+    var code = "function(){"+
+                   "var tempvalue = $('#ptifrmtgtframe').get(0).contentWindow.document.win0;"+
+                   "$('#ptifrmtgtframe').get(0).contentWindow.submitAction_win0(tempvalue,'#ICSave');}";
+    injectInlineScript(code);
+    console.log("Submit Comment");
+}*/
+
+function addComment(comment, rowNum){
+
+    var code = "function(){"+
+                   // "$('#ptifrmtgtframe').contents().find('#win0divDSX_EX_TIME_COMMENT1\\\$0').find('textarea').val('" + comment +"').change();}" ;
+                   "$('#ptifrmtgtframe').contents().find('textarea').val('" + comment +"').change();}" ;
+    injectInlineScript(code);
+    console.log("Adding comment : "+ comment + "for row number : "+ rowNum);
+}
+
+/*function addComment(comment, rowNum){
+      $('#ptifrmtgtframe').get(0).contents().find('#win0divDSX_EX_TIME_COMMENT1\\$0 textarea')[0].click();
+      $('#ptifrmtgtframe').contents().find('#win0divDSX_EX_TIME_COMMENT1\\$0 textarea').val(comment).change();
+      console.log("Adding comment : "+ comment + "for row number : "+ rowNum);
+
+}
+*/

@@ -29,18 +29,20 @@ if (typeof jQuery !== 'undefined') {
 													continue;
 
 											}else{
-													insertProjectBU(rowdata,rowNum);
+													await insertProjectBU(rowdata,rowNum);
 													insertProjectCode(rowdata,rowNum);
+													
 													// console.log("before Select Activity ",new Date().toLocaleTimeString());
-													// await selectActivity(rowdata,rowNum);
+													await selectActivity(rowdata,rowNum,3);
 													// await sleep(2000);
 													// console.log("after selectActivity", new Date().toLocaleTimeString());
 													insertProjectHour(rowdata,rowNum);
-													// await sleep(2000);
+													await insertComment(rowdata,rowNum);
+													await sleep(2000);
 													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
 													rowNum = rowNum +1 ;
 
-														}
+													}
 										}                        
 								}//done injecting
 		
