@@ -58,7 +58,7 @@ async function checkIfNextRowExist(rowNum){
       if( typeof $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$'+rowNum).val() == 'undefined' ){
         addNewRow(rowNum-1);
         await waitUntilActionCompleted();
-        await sleep(1000);
+        await sleep(100);
         
       }
 
@@ -103,12 +103,12 @@ async function injectJQueryScript(){
   jq.src = "//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js";
   document.getElementsByTagName('head')[0].appendChild(jq);
   console.log(jq);
-  await sleep(4500);
+  await sleep(3500);
 
 }
 
 async function waitUntilActionCompleted(){
-  await sleep(2500);
+  await sleep(1200);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
   console.log(loading);
   if (loading == 'none'){
@@ -200,30 +200,36 @@ async function selectActivity(rowdata,rowNum,numOfTryAllowed){
           }else if(checkIfErrorMenuOpen()){
               closeErrorMenu();
               await selectActivity(rowdata,rowNum,numOfTryAllowed-1);
+              if(numOfTryAllowed == 1){
+                  deleteRow(rowNum);
+                  await waitUntilActionCompleted();
+                  numOfTryAllowed =0;
+                 return false;
+              }
           }
       }
       return false;
      
 }
 
-function returnValueIfCommentExist(rowdata){
+function checkIfCommentExist(rowdata){
     if(rowdata.hasOwnProperty('SCP')){ 
-        return rowdata['SCP'];
+        return true;
     }else{
-      return "";
+      return false;
     }
 }
 
 async function insertComment(rowdata,rowNum){
     openCommentPage(rowNum);
     await waitUntilActionCompleted();
-    comment = returnValueIfCommentExist(rowdata)
-    await sleep(700);
+    comment = rowdata["SCP"];
+    // await sleep(700);
     addComment(comment,rowNum);
-    await sleep(1000);
+    // await sleep(1000);
     submitComment(rowNum);
     await waitUntilActionCompleted();
-    await sleep(750);
+    // await sleep(750);
 }
 
 function returnMenuTitle(){

@@ -12,7 +12,7 @@ if (typeof jQuery !== 'undefined') {
 			console.log(timesheetData);
 
 						// check title EX_ICLIENT_WRK_PAGE_TITLE_60 is Time Report Summary or not
-						if($('#ptifrmtgtframe').contents().find('#win0divEX_ICLIENT_WRK_PAGE_TITLE_60 span').text() == "Time Report Summary" ){
+						if( document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#EOTL_SS_HDR_TITLE h1").innerHTML == "Create Time Report" ){
 							console.log("start injecting");
 							var rowNum =0;
 
@@ -33,12 +33,16 @@ if (typeof jQuery !== 'undefined') {
 													insertProjectCode(rowdata,rowNum);
 													
 													// console.log("before Select Activity ",new Date().toLocaleTimeString());
-													await selectActivity(rowdata,rowNum,3);
+													var success = await selectActivity(rowdata,rowNum,3);
+													if(!success){
+														continue;
+														await sleep(500);
+													}
 													// await sleep(2000);
 													// console.log("after selectActivity", new Date().toLocaleTimeString());
 													insertProjectHour(rowdata,rowNum);
-													await insertComment(rowdata,rowNum);
-													await sleep(2000);
+													if( checkIfCommentExist(rowdata)){await insertComment(rowdata,rowNum);}
+													await sleep(500);
 													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
 													rowNum = rowNum +1 ;
 

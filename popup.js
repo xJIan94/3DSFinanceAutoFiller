@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   openPageButton.addEventListener('click', function() {
-    var actionurl = "https://dsxfinance.dsone.3ds.com/psp/FSPRD/EMPLOYEE/ERP/s/WEBLIB_TE_NAV.WEBLIB_FUNCTION.FieldFormula.iScript_AddTimeReport?TE.Menu.Var=ADMIN&PORTALPARAM_PTCNAV=EPTE_ADDTIMEREPORT&EOPP.SCNode=ERP&EOPP.SCPortal=EMPLOYEE&EOPP.SCName=EP_EMPLOYEE_TE_CENTER&EOPP.SCLabel=Time%20and%20Expense%20Center&EOPP.SCPTcname=EP_SC_SP_EMPLOYEE_TE_CENTER&FolderPath=PORTAL_ROOT_OBJECT.PORTAL_BASE_DATA.CO_NAVIGATION_COLLECTIONS.EP_EMPLOYEE_TE_CENTER.EP_F200307091010078832972197.EP_S200307111104284293038727&IsFolder=false";
+    var actionurl = "https://dsxfinance.dsone.3ds.com/psp/FSPRD/EMPLOYEE/ERP/s/WEBLIB_TE_NAV.WEBLIB_FUNCTION.FieldFormula.iScript_AddTimeReport?TE.Menu.Var=ADMIN";
     chrome.tabs.create({ url: actionurl})
   }, false);
 
