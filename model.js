@@ -296,7 +296,7 @@ function openCommentPage(rowNum){
 }
 
 function submitComment(){
-      $('#ptifrmtgtframe').contents().find('#win0divPSTOOLBAR input.PSPUSHBUTTONTBOK')[0].click();
+      $('iFrame').contents().find('#win0divPSTOOLBAR input.PSPUSHBUTTONTBOK')[0].click();
       console.log("Submit Comment");
 }
 
@@ -308,19 +308,37 @@ function submitComment(){
     console.log("Submit Comment");
 }*/
 
-function addComment(comment, rowNum){
+/*function addComment(comment, rowNum){
 
     var code = "function(){"+
                    // "$('#ptifrmtgtframe').contents().find('#win0divDSX_EX_TIME_COMMENT1\\\$0').find('textarea').val('" + comment +"').change();}" ;
                    "$('#ptifrmtgtframe').contents().find('textarea').val('" + comment +"').change();}" ;
     injectInlineScript(code);
     console.log("Adding comment : "+ comment + "for row number : "+ rowNum);
-}
+}*/
 
-/*function addComment(comment, rowNum){
-      $('#ptifrmtgtframe').get(0).contents().find('#win0divDSX_EX_TIME_COMMENT1\\$0 textarea')[0].click();
-      $('#ptifrmtgtframe').contents().find('#win0divDSX_EX_TIME_COMMENT1\\$0 textarea').val(comment).change();
+function addComment(comment, rowNum){
+      document.querySelectorAll("iFrame[id*='ptModFrame']")[0].contentWindow.document.querySelector("textarea").innerHTML = comment;
       console.log("Adding comment : "+ comment + "for row number : "+ rowNum);
 
 }
-*/
+
+function openPersonalHoursTable(){
+  try{
+    var check = document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#win0divPOL_DESCR\\$1 span").innerHTML;
+    
+  }
+  catch(err){
+    console.log("The Personal Hour table is not open");
+    document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#EX_TRC_MAP_VW\\$expand\\$0").click();
+  }
+
+}
+
+
+
+function displayInternalProject(rowNum){
+
+    var activityTitle =  document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector('#win0divDESCR_LBL\\$'+rowNum+' a img').alt;
+    document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector('#win0divDESCR_LBL\\$'+rowNum).innerHTML += activityTitle;
+}

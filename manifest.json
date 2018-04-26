@@ -3,7 +3,7 @@
 
   "name": "3DS Timesheet AutoFiller",
   "description": "This extension allows the user to change the background color of the current page.",
-  "version": "1.01",
+  "version": "1.2",
 
   "browser_action": {
     "default_icon": "3ds.png",

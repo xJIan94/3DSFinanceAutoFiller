@@ -15,7 +15,8 @@ if (typeof jQuery !== 'undefined') {
 						if( document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#EOTL_SS_HDR_TITLE h1").innerHTML == "Create Time Report" ){
 							console.log("start injecting");
 							var rowNum =0;
-
+							openPersonalHoursTable();
+							await waitUntilActionCompleted();
 							for (var key in timesheetData){
 
 									rowdata = timesheetData[key];
@@ -44,6 +45,7 @@ if (typeof jQuery !== 'undefined') {
 													if( checkIfCommentExist(rowdata)){await insertComment(rowdata,rowNum);}
 													await sleep(500);
 													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
+													displayInternalProject(rowNum);
 													rowNum = rowNum +1 ;
 
 													}

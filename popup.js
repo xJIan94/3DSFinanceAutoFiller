@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   var openPageButton = document.getElementById('openPage');
   var updatePageButton = document.getElementById('updatePage');
+  var displayBUPJButton = document.getElementById('displayBUPJ');
 
   // chrome.tabs.onActivated.addListener(function(tab,win){
   //   alert(tab.url);
@@ -28,7 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
   //   }
 
   // });
-  
+  displayBUPJButton.addEventListener('click', function() {
+    chrome.tabs.executeScript(null, { file: "handoverDisplay.js" });
+  }, false);
 
   openPageButton.addEventListener('click', function() {
     var actionurl = "https://dsxfinance.dsone.3ds.com/psp/FSPRD/EMPLOYEE/ERP/s/WEBLIB_TE_NAV.WEBLIB_FUNCTION.FieldFormula.iScript_AddTimeReport?TE.Menu.Var=ADMIN";
@@ -45,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(timesheetData.constructor == Array || timesheetData.constructor == Object  || timesheetData.constructor == String){
         console.log("correct Data type");
         console.log(timesheetData);
+        
         // Save it using the Chrome extension storage API.
         chrome.storage.local.set({'timesheetData': timesheetData}, function() {
           // Notify that we saved.
@@ -56,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     chrome.tabs.getSelected(null, function(tab) {
+      console.log(tab.url.indexOf("dsxfinance"));
         if(tab.url.indexOf("dsxfinance") >=0)
         {
           
