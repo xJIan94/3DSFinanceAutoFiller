@@ -144,10 +144,13 @@ function sleep(ms) {
 function searchForTaskID(noOfActivity,task){
 
       var taskId = '';
+      task = task.replace(/[^\w\s]/gi, '');// only allow number and word.
 
       console.log(noOfActivity,task);
       for (let i = 0; i < noOfActivity; i++) {
-        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text();
+        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text(); 
+        
+        activityMenuText = activityMenuText.replace(/[^\w\s]/gi, '');// only allow number and word.
         console.log(activityMenuText);
         if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
             taskId = $('iFrame').contents().find('#PTSRCHRESULTS0  #RESULT6\\$'+i).parent().prev().prev().prev().text();

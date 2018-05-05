@@ -24,7 +24,7 @@ if (typeof jQuery !== 'undefined') {
 									console.log("Start looping , key="+key+", row number "+rowNum);
 									// console.log(rowdata);
 									if(rowdata.hasOwnProperty('BU')) { 
-
+											rowdata["BU"] = String(rowdata["BU"]);
 											if(rowdata["BU"].startsWith('*')) {
 													insertPersonalHour(rowdata);
 													continue;
@@ -33,19 +33,21 @@ if (typeof jQuery !== 'undefined') {
 													await insertProjectBU(rowdata,rowNum);
 													insertProjectCode(rowdata,rowNum);
 													
-													// console.log("before Select Activity ",new Date().toLocaleTimeString());
-													var success = await selectActivity(rowdata,rowNum,3);
-													if(!success){
-														continue;
-														await sleep(500);
+													if(rowdata.hasOwnProperty("TASK")) {
+														var success = await selectActivity(rowdata,rowNum,3);
+														if(!success){
+															continue;
+															await sleep(500);
+														}
 													}
+													
 													// await sleep(2000);
 													// console.log("after selectActivity", new Date().toLocaleTimeString());
 													insertProjectHour(rowdata,rowNum);
 													if( checkIfCommentExist(rowdata)){await insertComment(rowdata,rowNum);}
 													await sleep(500);
 													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
-													displayInternalProject(rowNum);
+													
 													rowNum = rowNum +1 ;
 
 													}
