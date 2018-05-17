@@ -30,26 +30,26 @@ if (typeof jQuery !== 'undefined') {
 													continue;
 
 											}else{
-													await insertProjectBU(rowdata,rowNum);
-													insertProjectCode(rowdata,rowNum);
+													let tempRowNum = rowNum;
+													rowNum = rowNum +1 ;
+													await insertProjectBU(rowdata,tempRowNum);
+													insertProjectCode(rowdata,tempRowNum);
 													
 													if(rowdata.hasOwnProperty("TASK")) {
-														var success = await selectActivity(rowdata,rowNum,3);
+														var success = await selectActivity(rowdata,tempRowNum,3);
 														if(!success){
-															continue;
+															break;
 															await sleep(500);
 														}
 													}
 													
 													// await sleep(2000);
 													// console.log("after selectActivity", new Date().toLocaleTimeString());
-													insertProjectHour(rowdata,rowNum);
-													if( checkIfCommentExist(rowdata)){await insertComment(rowdata,rowNum);}
+													insertProjectHour(rowdata,tempRowNum);
+													if( checkIfCommentExist(rowdata)){await insertComment(rowdata,tempRowNum);}
 													await sleep(500);
 													// console.log("after insertProjectHour" ,new Date().toLocaleTimeString());
 													
-													rowNum = rowNum +1 ;
-
 													}
 										}                        
 								}//done injecting

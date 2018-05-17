@@ -20,7 +20,7 @@ function insertPersonalHourRow(rowdata,type) {
       
       for (var key in rowdata){
         if(rowdata.hasOwnProperty(key)){// check if the key exist
-            //console.log(key, rowdata[key]);
+            console.log(key, rowdata[key]);
             if(day.hasOwnProperty(key)){
                 $('#ptifrmtgtframe').contents().find('#POL_TIME'+day[key]+'\\$'+type).val(rowdata[key]);
             }
@@ -144,7 +144,7 @@ function sleep(ms) {
 function searchForTaskID(noOfActivity,task){
 
       var taskId = '';
-      task = task.replace(/[^\w\s]/gi, '');// only allow number and word.
+      task = task.toString().replace(/[^\w\s]/gi, '');// only allow number and word.
 
       console.log(noOfActivity,task);
       for (let i = 0; i < noOfActivity; i++) {
@@ -204,7 +204,8 @@ async function selectActivity(rowdata,rowNum,numOfTryAllowed){
               closeErrorMenu();
               await selectActivity(rowdata,rowNum,numOfTryAllowed-1);
               if(numOfTryAllowed == 1){
-                  deleteRow(rowNum);
+                  //deleteRow(rowNum);
+                  alert("Warning!! The following action cannot be done! Exiting the program!")
                   await waitUntilActionCompleted();
                   numOfTryAllowed =0;
                  return false;
