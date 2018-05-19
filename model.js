@@ -126,6 +126,26 @@ async function waitUntilActionCompleted(){
   } 
 }
 
+async function waitUntilActionCompleted(){
+  await sleep(1200);
+  var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
+  console.log(loading);
+  if (loading == 'none'){
+    await sleep(500);
+    return true;
+    console.log("action done")
+
+  }else if(loading == 'block'){
+    console.log("action not done")
+    await sleep(100);
+    return waitUntilActionCompleted();
+    
+  }else{
+    console.log("ERROR! system unable to check is the page done loading!");
+    return false;
+  } 
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -345,4 +365,22 @@ function displayInternalProject(rowNum){
 
     var activityTitle =  document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector('#win0divDESCR_LBL\\$'+rowNum+' a img').alt;
     document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector('#win0divDESCR_LBL\\$'+rowNum).innerHTML += activityTitle;
+}
+
+function clickUpdateTotalButton(){
+
+    document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#PB_UPDATE_2").click();
+}
+
+function getTotalHours(){
+
+    clickUpdateTotalButton();
+    let totalHour = document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#win0divEX_TIME_HDR_WRK_GRAND_TOTAL span").innerHTML;
+    return totalHour;
+
+}
+
+function getTotalHourPerRow(rowNum){
+    let rowHour = document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#EX_TM_DT_DLY_WK_TOTAL\\$" + rowNum).innerHTML
+    return rowHour;
 }
