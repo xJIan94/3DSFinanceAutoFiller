@@ -1,0 +1,35 @@
+Todo List:
+
+
+
+Done as now: 
+- [Feature] adding new row if needed
+- [Feature] delete row function
+- [Feature] open activity menu is working
+- [Feature] auto search the activity code inside the menu and later put in the box
+- Refactor the code to make it more readable
+- [BUG] Fix Some weird error after multiple insert of activity code
+- [Feature] Insert the SCP code into the comment 
+- [Feature] Detect when the error happen and carry out a number of tried
+- [Feature] Auto delete the row with error
+- [BUG] Fixed some bugs after 3ds Finance update.
+- [BUG] Fixed some bug in python script when reading the timesheet excel.
+- Publish the extension to chrome web store -> 1 - 2 Hours
+
+Working:
+- [Feature] Validate the result of timesheet -> 1-2 Hours
+
+
+Future Plan for Timesheet Autofiller:
+
+- [Feature] Show the project with error in the popup page -> 1 - 2 Hours
+
+- [Feature] check if the project code is valid or the activity code is exist. -> 2 - 4 Hours
+- [Feature] Import the UI of the extension -> 2 - 3 Hours
+- [Feature] convert the extension to use ajax call to insert the script -> 2 - 6 Hours
+- Migrate it to Firefox -> 2-4 Hours.
+
+
+Pending:
+
+- [BUG] modify the logic it wait until the page is fully loaded only insert -> 2 - 6 Hours
