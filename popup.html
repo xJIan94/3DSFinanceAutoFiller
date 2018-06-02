@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <title>Timesheet Autofiller</title>
-    
+
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- <script src="jquery.min.js"></script> -->
@@ -34,17 +34,29 @@
               <input type="text" class="form-control" id="timesheet_data" placeholder="Timesheet Data">
             </div>
           </div>
-          
+
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button type="button" class="btn btn-default" id="updatePage" >Insert data</button>
+              <button type="button" class="btn btn-default" id="updatePage" data-toggle="collapse" data-target="#collapseProjectStatus" aria-expanded="false" aria-controls="collapseExample">Insert data</button>
             </div>
           </div>
+
+          <div class="collapse" id="collapseProjectStatus">
+            <hr/>
+            <div class="card" style="width: 18rem;" id="failedProjectStatus">
+
+              <ul class="list-group list-group-flush" id="failedProjectList">
+                <li class="list-group-item">Processing...</li>
+              </ul>
+            </div>
+
+          </div>
+
         </form>
-        
+
 
     </div>
-    
+
 
   </div>
     <script src="popup.js"></script>

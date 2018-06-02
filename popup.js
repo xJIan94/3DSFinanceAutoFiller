@@ -1,35 +1,46 @@
 document.addEventListener('DOMContentLoaded', function() {
+
+  chrome.runtime.sendMessage({popup: "initial"}, function(response) {
+    let data = response.background;
+    if(data === undefined){
+      console.log(data);
+      for (var i = 0; i < data.length; i++) {
+        addNewFailedProjectRow(data[i]);
+      }
+      $('#collapseProjectStatus').collapse();
+    }
+  });
+
   var openPageButton = document.getElementById('openPage');
   var updatePageButton = document.getElementById('updatePage');
   var displayBUPJButton = document.getElementById('displayBUPJ');
 
-  // chrome.tabs.onActivated.addListener(function(tab,win){
-  //   alert(tab.url);
-  //   if(tab.url.indexOf("dsxfinance") >=0 )
-  //     {
-  //       alert(tab.url);
-  //       document.getElementById("updatePage").disabled = false;
-  //     }
-  //   else{
 
-  //       document.getElementById("updatePage").disabled = true;
-  //   }
+  function addNewFailedProjectRow(failedProjectRow){
+    let failedProjectList = document.querySelector("#failedProjectList");
+    let failedProjectItem = document.createElement('li');
+    failedProjectItem.classList.add("list-group-item");
+    failedProjectItem.appendChild(document.createTextNode(failedProjectRow.PJ+"  -> Failed"));
+    failedProjectList.appendChild(failedProjectItem);
+  }
 
-  // });
 
-  // chrome.tabs.onUpdated.addListener(function(tab){
-  //   if(tab.url.indexOf("dsxfinance") >=0 )
-  //     {
-  //       alert(tab.url);
-  //       document.getElementById("updatePage").disabled = false;
-  //     }
-  //   else{
+  chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.hasOwnProperty('failedRow'))
+      addNewFailedProjectRow(request.failedRow);
+      sendResponse({background: "insertCompleted"});
+  });
 
-  //       document.getElementById("updatePage").disabled = true;
-  //   }
 
-  // });
+
+
+
   displayBUPJButton.addEventListener('click', function() {
+
     chrome.tabs.executeScript(null, { file: "handoverDisplay.js" });
   }, false);
 
@@ -43,19 +54,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     var timesheetData = JSON.parse(document.getElementById('timesheet_data').value);
- 
+
 
     if(timesheetData.constructor == Array || timesheetData.constructor == Object  || timesheetData.constructor == String){
         console.log("correct Data type");
         console.log(timesheetData);
-        
+
         // Save it using the Chrome extension storage API.
         chrome.storage.local.set({'timesheetData': timesheetData}, function() {
           // Notify that we saved.
           console.log('Settings saved');
         });
     }
-    
+
 
 
 
@@ -63,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log(tab.url.indexOf("dsxfinance"));
         if(tab.url.indexOf("dsxfinance") >=0)
         {
-          
+
           chrome.tabs.executeScript(null, { file: "jquery.min.js" }, function() {
               chrome.tabs.executeScript(null, { file: "model.js" });
               chrome.tabs.executeScript(null, { file: "content.js" });
@@ -78,4 +89,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 }, false);
-

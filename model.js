@@ -1,9 +1,12 @@
+var port = chrome.runtime.connect({name: "content"});
+
+
 function insertPersonalHour(rowdata) {
     var type = {"Admin":'1',"Training":'5',"Sick":'11',"Leave":'9'};
     // var rowdata = timesheetData[keyNumber];
     tempBU = rowdata["BU"].toLowerCase();
     console.log(rowdata);
-    if(tempBU.search('adminstration') > 0){
+    if(tempBU.search('admin') > 0){
         insertPersonalHourRow(rowdata,type["Admin"]);
     }else if (tempBU.search('training received') > 0) {
         insertPersonalHourRow(rowdata,type["Training"]);
@@ -17,14 +20,14 @@ function insertPersonalHour(rowdata) {
 function insertPersonalHourRow(rowdata,type) {
 
       var day = { "Mon":'1', "Tue":'2' , "Wed":'3', "Thu":'4', "Fri":'5', "Sat":'6', "Sun":'7' };
-      
+
       for (var key in rowdata){
         if(rowdata.hasOwnProperty(key)){// check if the key exist
             console.log(key, rowdata[key]);
             if(day.hasOwnProperty(key)){
                 $('#ptifrmtgtframe').contents().find('#POL_TIME'+day[key]+'\\$'+type).val(rowdata[key]);
             }
-            
+
         }
       }
 }
@@ -32,15 +35,15 @@ function insertPersonalHourRow(rowdata,type) {
 async function insertProjectHour(rowdata,rowNum){
       // await sleep(500);
       var day = { "Mon":'1', "Tue":'2' , "Wed":'3', "Thu":'4', "Fri":'5', "Sat":'6', "Sun":'7' };
-      
+
       for (var key in rowdata){
         if(rowdata.hasOwnProperty(key)){// check if the key exist
-            
+
             if(day.hasOwnProperty(key)){
               // console.log(key, rowdata[key],"---> ",rowNum);
                 $('#ptifrmtgtframe').contents().find('#TIME'+day[key]+'\\$'+rowNum).val(rowdata[key]);
             }
-            
+
         }
       }
 }
@@ -59,7 +62,7 @@ async function checkIfNextRowExist(rowNum){
         addNewRow(rowNum-1);
         await waitUntilActionCompleted();
         await sleep(100);
-        
+
       }
 
 }
@@ -67,16 +70,16 @@ async function checkIfNextRowExist(rowNum){
 function insertProjectCode(rowdata,rowNum){
 
   if(rowdata.hasOwnProperty("PJ")){// check if the Project Code exist
-            
+
       // console.log(rowdata);
       rowdata["PJ"] = rowdata["PJ"].replace(/ /g,''); // replace the space inside the BU code
       console.log(rowdata);
       $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$'+rowNum).val(rowdata["PJ"]).trigger("change");
-            
+
   }else{
       console.log("Project Code Didn't EXIST!!!")
   }
-      
+
 }
 
 function injectInlineScript(injectedCode){
@@ -97,7 +100,7 @@ async function checkIfJqueryExist(){
 }
 
 async function injectJQueryScript(){
-  
+
   var jq = document.createElement('script');
   // jq.src = "jquery.min.js";
   jq.src = "//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js";
@@ -107,7 +110,7 @@ async function injectJQueryScript(){
 
 }
 
-async function waitUntilActionCompleted(){
+/*async function waitUntilActionCompleted(){
   await sleep(1200);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
   console.log(loading);
@@ -119,13 +122,13 @@ async function waitUntilActionCompleted(){
     console.log("action not done")
     await sleep(300);
     return waitUntilActionCompleted();
-    
+
   }else{
     console.log("ERROR! system unable to check is the page done loading!");
     return false;
-  } 
+  }
 }
-
+*/
 async function waitUntilActionCompleted(){
   await sleep(1200);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
@@ -139,11 +142,11 @@ async function waitUntilActionCompleted(){
     console.log("action not done")
     await sleep(100);
     return waitUntilActionCompleted();
-    
+
   }else{
     console.log("ERROR! system unable to check is the page done loading!");
     return false;
-  } 
+  }
 }
 
 function sleep(ms) {
@@ -168,8 +171,8 @@ function searchForTaskID(noOfActivity,task){
 
       console.log(noOfActivity,task);
       for (let i = 0; i < noOfActivity; i++) {
-        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text(); 
-        
+        var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$'+i).text();
+
         activityMenuText = activityMenuText.replace(/[^\w\s]/gi, '');// only allow number and word.
         console.log(activityMenuText);
         if( activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0){
@@ -202,12 +205,12 @@ async function tryToInputTask(task,taskId,rowNum){
       }else{
           console.log("Before insertActivity",new Date().toLocaleTimeString());
           // insertActivity(taskId,rowNum);
-          
+
           $('#ptifrmtgtframe').contents().find('#ACTIVITY_CODE\\$'+rowNum).val(taskId);
       }
 }
 
-async function selectActivity(rowdata,rowNum,numOfTryAllowed){ 
+async function selectActivity(rowdata,rowNum,numOfTryAllowed){
       openActivityMenu(rowNum);
       await waitUntilActionCompleted();
       if(numOfTryAllowed >0){
@@ -224,8 +227,8 @@ async function selectActivity(rowdata,rowNum,numOfTryAllowed){
               closeErrorMenu();
               await selectActivity(rowdata,rowNum,numOfTryAllowed-1);
               if(numOfTryAllowed == 1){
-                  //deleteRow(rowNum);
-                  alert("Warning!! The following action cannot be done! Exiting the program!")
+                  deleteRow(rowNum);
+                  console.log("Warning!! The following row cannot be inserted!");
                   await waitUntilActionCompleted();
                   numOfTryAllowed =0;
                  return false;
@@ -233,11 +236,11 @@ async function selectActivity(rowdata,rowNum,numOfTryAllowed){
           }
       }
       return false;
-     
+
 }
 
 function checkIfCommentExist(rowdata){
-    if(rowdata.hasOwnProperty('SCP')){ 
+    if(rowdata.hasOwnProperty('SCP')){
         return true;
     }else{
       return false;
@@ -277,12 +280,12 @@ function checkIfActivityMenuGetOpen(){
 
 function checkIfErrorMenuOpen(){
     var queryResult = returnMenuTitle();
-    if ( queryResult == ' Message '){
+    if ( queryResult == ' Message ' || queryResult == 'Message'){
       return true;
     }else{
       return false;
     }
-} 
+}
 
 function closeErrorMenu(){
     $('#okbutton input').trigger('click');
@@ -350,7 +353,7 @@ function addComment(comment, rowNum){
 function openPersonalHoursTable(){
   try{
     var check = document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#win0divPOL_DESCR\\$1 span").innerHTML;
-    
+
   }
   catch(err){
     console.log("The Personal Hour table is not open");
