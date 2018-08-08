@@ -5,7 +5,7 @@ function displayActivity(){
 
     for (i = 0; i < activityTitle.length; i++){
 
-    	activityTitle[i].parentElement.parentElement.innerHTML = activityTitle[i].title; 
+    	activityTitle[i].parentElement.parentElement.innerHTML = activityTitle[i].title;
 
     }
 }
@@ -18,10 +18,12 @@ function displayPJ(){
 
     for (i = 0; i < pj.length; i++){
     	// console.log(item.parentElement);
-    	pj[i].parentElement.parentElement.innerHTML = pj[i].title; 
+    	pj[i].parentElement.parentElement.innerHTML = pj[i].title;
     }
 }
 
+if( document.querySelectorAll("#ptifrmtgtframe")[0].contentWindow.document.querySelector("#EOTL_SS_HDR_TITLE h1").innerHTML.indexOf("Time Report") > 0 ){
 
-displayPJ();
-displayActivity();
+  displayPJ();
+  displayActivity();
+}

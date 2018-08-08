@@ -196,12 +196,12 @@ function getActivityAmount(){
       }
 }
 
-async function tryToInputTask(task,taskId,rowNum){
+async function tryToInputTask(rowdata,task,taskId,rowNum){
       if (taskId == ''){
 
           console.log("ERROR!!! Activity '"+task+"' for row "+rowNum+" could not be found!!!");
-          // await sleep(300000);
-          // window.exit();
+          rowdata.error = "Missing Activity Code";
+          port.postMessage({ContentFailRow: rowdata});
       }else{
           console.log("Before insertActivity",new Date().toLocaleTimeString());
           // insertActivity(taskId,rowNum);
@@ -220,7 +220,7 @@ async function selectActivity(rowdata,rowNum,numOfTryAllowed){
               taskId = searchForTaskID(noOfActivity,task);
               closeActivityMenu();
               await waitUntilActionCompleted();
-              tryToInputTask(task,taskId,rowNum);
+              tryToInputTask(rowdata,task,taskId,rowNum);
 
               return true;
           }else if(checkIfErrorMenuOpen()){

@@ -49,8 +49,10 @@ if (typeof jQuery !== 'undefined') {
 													if(rowdata.hasOwnProperty("TASK")) {
 														var success = await selectActivity(rowdata,tempRowNum,3);
 														if(!success){
+															rowdata.error = "Missing/ Invalid Project Code";
 						                  port.postMessage({ContentFailRow: rowdata});
-															break;
+															rowNum = rowNum -1 ;
+															continue;
 															await sleep(500);
 														}
 													}

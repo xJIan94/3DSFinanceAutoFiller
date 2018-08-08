@@ -5,6 +5,7 @@
 
 
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstraptoggle/bootstrap-toggle.min.css" rel="stylesheet">
     <!-- <script src="jquery.min.js"></script> -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -22,9 +23,13 @@
   <div class="container-fluid">
     </Br>
     <div class="row col-md-12">
+
       <div class="row">
-        <div class="col-xs-6"> <button class="btn btn-default btn-sm" type="button" id="displayBUPJ">Display BU and PJ code</button> </div>
-        <div class="col-xs-6"> <button class="btn btn-default btn-sm" type="button" id="openPage">Open 3dsFinance</button> </div>
+
+        <div class="col-xs-4"> <button class="btn btn-default btn-sm" type="button" id="openPage">Open 3dsFinance</button> </div>
+        <div class="col-xs-4">
+          <input id="toggle-overlay" type="checkbox" checked data-toggle="toggle"  data-on="Enable Overlay" data-off="Disable Overlay" data-size="small" data-width=125>
+        </div>
       </div>
     </Br>
         <form class="form-horizontal">
@@ -38,15 +43,16 @@
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
               <button type="button" class="btn btn-default" id="updatePage" data-toggle="collapse" data-target="#collapseProjectStatus" aria-expanded="false" aria-controls="collapseExample">Insert data</button>
+              <button type="button" class="btn btn-default" id="clearError" data-toggle="collapse" data-target="#collapseProjectStatus" aria-expanded="false" aria-controls="collapseExample">Clear</button>
             </div>
           </div>
 
           <div class="collapse" id="collapseProjectStatus">
             <hr/>
-            <div class="card" style="width: 18rem;" id="failedProjectStatus">
+            <div class="card col-sm-12 col-xs-12"  id="failedProjectStatus">
 
               <ul class="list-group list-group-flush" id="failedProjectList">
-                <li class="list-group-item">Processing...</li>
+                <!-- <li class="list-group-item">Processing...</li> -->
               </ul>
             </div>
 
@@ -60,7 +66,8 @@
 
   </div>
     <script src="popup.js"></script>
-    <script src="jquery.min.js""></script>
+    <script src="jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="bootstraptoggle/bootstrap-toggle.min.js"></script>
   </body>
 </html>
