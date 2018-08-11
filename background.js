@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var scriptRunningState = false;
   var scriptDoneRunning = false;
   var errorRow = [];
+  var InsertStatus = [];
   var overlay = true;
 
   // between content and backgrund
@@ -21,6 +22,14 @@ document.addEventListener('DOMContentLoaded', function() {
           failedRow: msg.ContentFailRow
         }, function(response) {
           console.log("Background- send error", response.background);
+        });
+      }
+      else if (msg.hasOwnProperty('InsertResult')) {
+        InsertStatus.push(msg.InsertResult);
+        chrome.runtime.sendMessage({
+          InsertStatus: msg.InsertResult
+        }, function(response) {
+          console.log("Background- send InsertStatus", response.background);
         });
       }
 

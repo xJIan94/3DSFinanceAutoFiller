@@ -13,13 +13,34 @@ document.addEventListener('DOMContentLoaded', function() {
     failedProjectList.appendChild(failedProjectItem);
   }
 
+  function updateStatus(status){
+    $('#status_msg').text(status);
+    console.log(status, $('#status_msg'))
+    if(status == "Success"){
+      $('#status_alert').addClass('alert-success');
+    }
+    else if(status == "Failed"){
+      $('#status_alert').addClass('alert-danger');
+    }
+    $('#status_alert').removeClass('hidden');
+    $(updatePageButton).button('reset');
+  }
+
+  $('#status_alert button.close').on('click', function(){
+    $('#status_alert').addClass('hidden');
+  });
+
   chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
       console.log(sender.tab ?
         "from a content script:" + sender.tab.url :
         "from the extension");
-      if (request.hasOwnProperty('failedRow'))
+      if (request.hasOwnProperty('failedRow')){
         addNewFailedProjectRow(request.failedRow);
+      }
+      else if (request.hasOwnProperty('InsertStatus')){
+        updateStatus(request.InsertStatus);
+      }
     });
 
   chrome.runtime.sendMessage({
@@ -73,20 +94,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
   updatePageButton.addEventListener('click', function() {
     console.log("updatePageButton click");
-    $(this).button('loading');
-    var timesheetData = JSON.parse(document.getElementById('timesheet_data').value);
+    var jsondata = document.getElementById('timesheet_data').value;
 
-    if (timesheetData.constructor == Array || timesheetData.constructor == Object || timesheetData.constructor == String) {
-      console.log("correct Data type");
-      console.log(timesheetData);
+    // check if JSON input provided
+    if(jsondata.length > 0){
+      var timesheetData = JSON.parse(jsondata);
 
-      // Save it using the Chrome extension storage API.
-      chrome.storage.local.set({
-        'timesheetData': timesheetData
-      }, function() {
-        // Notify that we saved.
-        console.log('Settings saved');
-      });
+      // check for valid JSON data
+      if (timesheetData.constructor == Array || timesheetData.constructor == Object || timesheetData.constructor == String) {
+        console.log("correct Data type");
+        console.log(timesheetData);
+
+        // Save it using the Chrome extension storage API.
+        chrome.storage.local.set({
+          'timesheetData': timesheetData
+        }, function() {
+          // Notify that we saved.
+          console.log('Settings saved');
+        });
+        $("#insert-data-form").removeClass("has-error");
+        $("#insert-data-form").addClass("has-success");
+        $(this).button('loading');
+      }else{
+        $("#insert-data-form").removeClass("has-success");
+        $("#insert-data-form").addClass("has-error");
+      }
+    }else{
+      $("#insert-data-form").removeClass("has-success");
+      $("#insert-data-form").addClass("has-error");
     }
 
     chrome.tabs.getSelected(null, function(tab) {

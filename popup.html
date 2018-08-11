@@ -36,11 +36,16 @@
       </Br>
 
       <form class="form-horizontal">
-        <div class="form-group">
+        <div class="form-group" id="insert-data-form">
           <label for="Timesheet" class="col-sm-2 control-label">TimeSheet Json:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="timesheet_data" placeholder="Timesheet Data">
           </div>
+        </div>
+
+        <div class="alert alert-dismissible hidden" role="alert" id="status_alert" style="padding:7px;margin-bottom: 15px;">
+          <button type="button" class="close" aria-label="Close" style="position: inherit;"><span aria-hidden="true">&times;</span></button>
+          <strong id="status_msg"></strong><span id="status_detail"></span>
         </div>
 
         <div class="form-group">
