@@ -1,9 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-
   var openPageButton = document.getElementById('openPage');
   var updatePageButton = document.getElementById('updatePage');
   var clearErrorButton = document.getElementById('clearError');
+
+  (function() {
+    console.log('<Execute onload>');
+
+    chrome.tabs.getSelected(null, function(tab) {
+      console.log("IndexOf 'dsxfinance' in URL :", tab.url.indexOf("dsxfinance"));
+      if ( tab.url.indexOf("dsxfinance") < 0 ){
+        $(updatePageButton).addClass('disabled');
+        $(clearErrorButton).addClass('disabled'); 
+      }
+    });
+  })();
+
+  function startExecuteScript(){
+    chrome.tabs.executeScript(null, {
+      file: "jquery.min.js"
+    }, function() {
+      chrome.tabs.executeScript(null, {
+        file: "model.js"
+      });
+      chrome.tabs.executeScript(null, {
+        file: "content.js"
+      });
+    });
+    // alert("scirpt js done");
+    //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
+    console.log("execute content.js");
+  }
 
   function addNewFailedProjectRow(failedProjectRow) {
     let failedProjectList = document.querySelector("#failedProjectList");
@@ -127,22 +154,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // start : injection and execution
         chrome.tabs.getSelected(null, function(tab) {
-          console.log(tab.url.indexOf("dsxfinance"));
-          if (tab.url.indexOf("dsxfinance") >= 0) {
-
-            chrome.tabs.executeScript(null, {
-              file: "jquery.min.js"
-            }, function() {
-              chrome.tabs.executeScript(null, {
-                file: "model.js"
-              });
-              chrome.tabs.executeScript(null, {
-                file: "content.js"
-              });
-            });
-            // alert("scirpt js done");
-            //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
-            console.log("execute content.js");
+          console.log("IndexOf 'dsxfinance' in URL :", tab.url.indexOf("dsxfinance"));
+          if ( tab.url.indexOf("dsxfinance") >= 0 ){
+            startExecuteScript();
+          }else{
+            console.log("Cannot inject/execute script - NOT DsxFinance URL");
           }
         });
       }else{
