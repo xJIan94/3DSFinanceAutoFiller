@@ -70,7 +70,7 @@ async function main() {
       }
       catch(e){
         // error occured
-        console.log("Error occured :", e.message);
+        console.log("Error occured :", e);
         insertResult = "Failed";
       }
       finally{
