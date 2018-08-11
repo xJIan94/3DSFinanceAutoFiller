@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     failedProjectItem.classList.add("list-group-item");
     failedProjectItem.appendChild(document.createTextNode(failedProjectRow.PJ + " , " + failedProjectRow.SCP + " : " + failedProjectRow.error));
     failedProjectList.appendChild(failedProjectItem);
+    $('#collapseProjectStatus').collapse('show');
   }
 
   function updateStatus(status){
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function ClearLog(){
     $('#status_alert').addClass('hidden');
+    $('#collapseProjectStatus').collapse('hide');
     failedProjectList.innerHTML = "";
     chrome.runtime.sendMessage({
       popup: "deleteLOG"
@@ -61,8 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
       for (var i = 0; i < data.length; i++) {
         addNewFailedProjectRow(data[i]);
       }
-      $('#collapseProjectStatus').collapse();
-
+      $('#collapseProjectStatus').collapse('show');
     }
   });
 
