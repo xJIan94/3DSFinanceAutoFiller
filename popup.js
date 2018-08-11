@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', function() {
     $(updatePageButton).button('reset');
   }
 
+  function ClearLog(){
+    $('#status_alert').addClass('hidden');
+    failedProjectList.innerHTML = "";
+    chrome.runtime.sendMessage({
+      popup: "deleteLOG"
+    });
+    console.log('Log cleared!');
+  }
+
   $('#status_alert button.close').on('click', function(){
     $('#status_alert').addClass('hidden');
   });
@@ -67,9 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   clearErrorButton.addEventListener('click', function() {
-    chrome.runtime.sendMessage({
-      popup: "deleteLOG"
-    });
+    ClearLog();
   }, false);
 
   $('#toggle-overlay').change(function() {
@@ -115,6 +122,28 @@ document.addEventListener('DOMContentLoaded', function() {
         $("#insert-data-form").removeClass("has-error");
         $("#insert-data-form").addClass("has-success");
         $(this).button('loading');
+        ClearLog();
+
+        // start : injection and execution
+        chrome.tabs.getSelected(null, function(tab) {
+          console.log(tab.url.indexOf("dsxfinance"));
+          if (tab.url.indexOf("dsxfinance") >= 0) {
+
+            chrome.tabs.executeScript(null, {
+              file: "jquery.min.js"
+            }, function() {
+              chrome.tabs.executeScript(null, {
+                file: "model.js"
+              });
+              chrome.tabs.executeScript(null, {
+                file: "content.js"
+              });
+            });
+            // alert("scirpt js done");
+            //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
+            console.log("execute content.js");
+          }
+        });
       }else{
         $("#insert-data-form").removeClass("has-success");
         $("#insert-data-form").addClass("has-error");
@@ -123,27 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
       $("#insert-data-form").removeClass("has-success");
       $("#insert-data-form").addClass("has-error");
     }
-
-    chrome.tabs.getSelected(null, function(tab) {
-      console.log(tab.url.indexOf("dsxfinance"));
-      if (tab.url.indexOf("dsxfinance") >= 0) {
-
-        chrome.tabs.executeScript(null, {
-          file: "jquery.min.js"
-        }, function() {
-          chrome.tabs.executeScript(null, {
-            file: "model.js"
-          });
-          chrome.tabs.executeScript(null, {
-            file: "content.js"
-          });
-        });
-        // alert("scirpt js done");
-        //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
-        console.log("execute content.js");
-
-      }
-    });
   }, false);
 
 
