@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         // alert("scirpt js done");
         //swindow.postMessage({ type: "FROM_PAGE", text: "Hello from the webpage!" }, "*");
-        console.log("execute background.js");
+        console.log("execute content.js");
 
       }
     });
