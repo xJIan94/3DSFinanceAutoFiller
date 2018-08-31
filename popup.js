@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.tabs.getSelected(null, function(tab) {
       console.log("IndexOf 'dsxfinance' in URL :", tab.url.indexOf("dsxfinance"));
       if ( tab.url.indexOf("dsxfinance") < 0 ){
-        $(updatePageButton).addClass('disabled');
-        $(clearErrorButton).addClass('disabled'); 
+        $(updatePageButton).prop('disabled', true);
+        $(clearErrorButton).prop('disabled', true); 
       }
     });
   })();
