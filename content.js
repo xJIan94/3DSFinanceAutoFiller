@@ -24,21 +24,26 @@ async function main() {
 
             rowdata = timesheetData[key];
 
-            console.log("Start looping , key=" + key + ", row number " + rowNum);
+            console.log(">> Looping : key=" + key + ", row number " + rowNum);
+            console.log('rowdata =',rowdata);
             // console.log(rowdata);
             if (rowdata.hasOwnProperty('BU')) {
               rowdata["BU"] = String(rowdata["BU"]);
               if (rowdata["BU"].startsWith('*')) {
+                console.log('#Step : insert Personal Hour');
                 insertPersonalHour(rowdata);
                 continue;
 
               } else {
                 let tempRowNum = rowNum;
                 rowNum = rowNum + 1;
+                console.log('#Step-1: insert Project BU');
                 await insertProjectBU(rowdata, tempRowNum);
+                console.log('#Step-2: insert Project Code');
                 insertProjectCode(rowdata, tempRowNum);
 
-                if (rowdata.hasOwnProperty("TASK")) {
+                console.log('#Step-3: select Activity');
+                //if (rowdata.hasOwnProperty("TASK")) {
                   var success = await selectActivity(rowdata, tempRowNum, 3);
                   if (!success) {
                     rowdata.error = "Missing/ Invalid Project Code";
@@ -49,12 +54,14 @@ async function main() {
                     continue;
                     await sleep(500);
                   }
-                }
+                //}
 
                 // await sleep(2000);
                 // console.log("after selectActivity", new Date().toLocaleTimeString());
+                console.log('#Step-4: insert Project Hour');
                 insertProjectHour(rowdata, tempRowNum);
                 if (checkIfCommentExist(rowdata)) {
+                  console.log('#Step-5: insert Comment');
                   await insertComment(rowdata, tempRowNum);
                 }
                 await sleep(500);

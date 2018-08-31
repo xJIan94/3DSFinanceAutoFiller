@@ -70,7 +70,7 @@ async function insertProjectHour(rowdata, rowNum) {
 }
 
 async function insertProjectBU(rowdata, rowNum) {
-  console.log("inserting BU -->" + rowdata['BU']);
+  console.log("inserting BU -->", rowdata['BU']);
   rowdata["BU"] = rowdata["BU"].replace(/ /g, ''); // replace the space inside the BU code
   await checkIfNextRowExist(rowNum);
   $('#ptifrmtgtframe').contents().find('#BUSINESS_UNIT_CODE\\$' + rowNum).val(rowdata["BU"]);
@@ -91,11 +91,11 @@ function insertProjectCode(rowdata, rowNum) {
   if (rowdata.hasOwnProperty("PJ")) { // check if the Project Code exist
     // console.log(rowdata);
     rowdata["PJ"] = rowdata["PJ"].replace(/ /g, ''); // replace the space inside the BU code
-    console.log(rowdata);
+    console.log('inserting Project -->', rowdata["PJ"]);
     $('#ptifrmtgtframe').contents().find('#PROJECT_CODE\\$' + rowNum).val(rowdata["PJ"]).trigger("change");
 
   } else {
-    console.log("Project Code Didn't EXIST!!!")
+    console.log("Project Code Doesn't EXIST!!!")
   }
 
 }
@@ -147,12 +147,22 @@ async function injectJQueryScript() {
 async function waitUntilActionCompleted() {
   await sleep(1200);
   var loading = $('#ptifrmtgtframe').contents().find('#WAIT_win0').css('display');
-  console.log(loading);
+  //console.log(loading);
   if (loading == 'none') {
     await sleep(500);
-    return true;
     console.log("action done")
-
+    /*
+    if (checkIfErrorMenuOpen()) {
+      closeErrorMenu();
+      await waitUntilActionCompleted();
+      rowdata.error = "Invalid BU/Project Code";
+      port.postMessage({
+        ContentFailRow: rowdata
+      });
+      console.log("Warning!! The following row cannot be inserted!");
+    }
+    */
+    return true;
   } else if (loading == 'block') {
     console.log("action not done")
     await sleep(100);
@@ -180,20 +190,22 @@ function openActivityMenu(rowNum) {
 
 function searchForTaskID(noOfActivity, task) {
   var taskId = '';
-  task = task.toString().replace(/[^\w\s]/gi, ''); // only allow number and word.
+  if(task != undefined){
+    task = task.toString().replace(/[^\w\s]/gi, ''); // only allow number and word.
 
-  console.log(noOfActivity, task);
-  for (let i = 0; i < noOfActivity; i++) {
-    var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$' + i).text();
+    console.log(noOfActivity, task);
+    for (let i = 0; i < noOfActivity; i++) {
+      var activityMenuText = $('iFrame').contents().find('#PTSRCHRESULTS0 span#RESULT6\\$' + i).text();
 
-    activityMenuText = activityMenuText.replace(/[^\w\s]/gi, ''); // only allow number and word.
-    console.log(activityMenuText);
-    if (activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0) {
-      taskId = $('iFrame').contents().find('#PTSRCHRESULTS0  #RESULT6\\$' + i).parent().prev().prev().prev().text();
-      console.log(taskId)
-      taskId = taskId.replace(/\n/g, '');
-      console.log(taskId)
-      return taskId;
+      activityMenuText = activityMenuText.replace(/[^\w\s]/gi, ''); // only allow number and word.
+      console.log(activityMenuText);
+      if (activityMenuText.toLowerCase().search(task.toLowerCase()) >= 0) {
+        taskId = $('iFrame').contents().find('#PTSRCHRESULTS0  #RESULT6\\$' + i).parent().prev().prev().prev().text();
+        console.log(taskId)
+        taskId = taskId.replace(/\n/g, '');
+        console.log(taskId)
+        return taskId;
+      }
     }
   }
   return '';
@@ -263,13 +275,26 @@ function checkIfCommentExist(rowdata) {
 async function insertComment(rowdata, rowNum) {
   openCommentPage(rowNum);
   await waitUntilActionCompleted();
-  comment = rowdata["SCP"];
-  // await sleep(700);
-  addComment(comment, rowNum);
-  // await sleep(1000);
-  submitComment(rowNum);
-  await waitUntilActionCompleted();
-  // await sleep(750);
+  if (checkIfErrorMenuOpen()) {
+    closeErrorMenu();
+    await waitUntilActionCompleted();
+    rowdata.error = "Invalid BU/Project Code";
+    port.postMessage({
+      ContentFailRow: rowdata
+    });
+    colsole.log('insertComment FAILED')
+    console.log("Warning!! The following row cannot be inserted!");
+    deleteRow(rowNum);
+    await waitUntilActionCompleted();
+  }else{
+    comment = rowdata["SCP"];
+    // await sleep(700);
+    addComment(comment, rowNum);
+    // await sleep(1000);
+    submitComment(rowNum);
+    await waitUntilActionCompleted();
+    // await sleep(750);
+  }
 }
 
 function returnMenuTitle() {
@@ -294,6 +319,7 @@ function checkIfActivityMenuGetOpen() {
 function checkIfErrorMenuOpen() {
   var queryResult = returnMenuTitle();
   if (queryResult == ' Message ' || queryResult == 'Message') {
+    console.log("Error Menu popped up during insertion.");
     return true;
   } else {
     return false;
