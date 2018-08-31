@@ -249,8 +249,14 @@ async function selectActivity(rowdata, rowNum, numOfTryAllowed) {
 
       return true;
     } else if (checkIfErrorMenuOpen()) {
+      var errorMessage = returnErrorMessage();
+      console.warn(errorMessage);
       closeErrorMenu();
-      await selectActivity(rowdata, rowNum, numOfTryAllowed - 1);
+      if(errorMessage.startsWith('Invalid value')){
+        numOfTryAllowed = 1;
+      }else{
+        await selectActivity(rowdata, rowNum, numOfTryAllowed - 1);
+      }
       if (numOfTryAllowed == 1) {
         deleteRow(rowNum);
         console.log("Warning!! The following row cannot be inserted!");
@@ -301,7 +307,12 @@ function returnMenuTitle() {
   var queryResult = '';
   queryResult = $('.PSMODALHEADER span').text();
   return queryResult;
+}
 
+function returnErrorMessage() {
+  var queryResult = '';
+  queryResult = $('.PSMODALCONTENT span').text();
+  return queryResult;
 }
 
 function checkIfActivityMenuGetOpen() {

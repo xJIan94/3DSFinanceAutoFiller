@@ -46,7 +46,7 @@ async function main() {
                 //if (rowdata.hasOwnProperty("TASK")) {
                   var success = await selectActivity(rowdata, tempRowNum, 3);
                   if (!success) {
-                    rowdata.error = "Missing/ Invalid Project Code";
+                    rowdata.error = "Missing/Invalid BU or Project Code";
                     port.postMessage({
                       ContentFailRow: rowdata
                     });
